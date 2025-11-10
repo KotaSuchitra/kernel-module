@@ -7,24 +7,14 @@
 #include <linux/ptrace.h>
 
 MODULE_LICENSE("GPL");
-MODULE_AUTHOR("Example");
+MODULE_AUTHOR("Suchitra");
 MODULE_DESCRIPTION("Kprobe module that logs openat syscall invocations (safe unload)");
-MODULE_VERSION("0.1");
-
-/*
- * For x86_64 the kernel function symbol for the openat syscall is often:
- *   __x64_sys_openat
- * but this can vary by kernel build. Check `dmesg` or /proc/kallsyms if you need to adjust.
- */
 
 static struct kprobe kp;
 
 /* Pre-handler: called just before the probed instruction executes */
 static int handler_pre(struct kprobe *p, struct pt_regs *regs)
 {
-    /* On x86_64 syscall args are in: rdi, rsi, rdx, r10, r8, r9
-       For openat: int dirfd (rdi), const char __user *pathname (rsi), int flags (rdx)
-    */
     const char __user *user_path = (const char __user *)regs->si;
     char *kbuf;
     long copied;
